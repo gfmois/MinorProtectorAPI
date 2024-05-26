@@ -11,7 +11,8 @@ app = Flask(f"{__name__}_face_detector")
     
 @app.route("/detect", methods=["POST"])
 def face_detector():
-    return face_controller
+    # FIXME: Llamar al modelo YOLOv8-facedetector
+    return jsonify(msg="Caras detectadas: 0", status=200)
 
 @app.route("/health")
 def get_server_init():

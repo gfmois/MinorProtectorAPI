@@ -76,7 +76,8 @@ class ImageController:
             img_shape = image.size # Get dimensions
             
             # Get faces from the image
-            faces = 0
+            # NOTE: call image_service
+            faces = self.image_service.detect_face(image)
             
             response = {
                 "faces": faces,
