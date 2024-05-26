@@ -1,4 +1,9 @@
 version: '3.2'
 services:
   gateway:
-    build: backend/gateway/.
+    image: python:3.10-alpine3.20
+    volumes:
+      - ./backend/src/modules/gateway:/app
+    command: apk add --no-cache make && pip install -r /app/requirements && cd /app && make
+    ports:
+      - 5000:5000
