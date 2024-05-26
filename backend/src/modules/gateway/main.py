@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from flask import Flask, request, jsonify
+from flask import Blueprint, request, jsonify
 
 from .src.controllers.image_controller import ImageController
 
-app = Flask(__name__)
+app = Blueprint("gateway", f"{__name__}_gateway")
 
 img_controller = ImageController()
 

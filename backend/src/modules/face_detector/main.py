@@ -1,14 +1,14 @@
 from datetime import datetime
 
-from flask import Flask, request, jsonify
+from flask import Blueprint, request, jsonify
 
 from .src.controllers.face_detector_controller import FaceDetectorController
 
-app = Flask(__name__)
+app = Blueprint("face_detector", f"{__name__}_face_detector")
 face_controller = FaceDetectorController()
 
 server_started_at = datetime.now()
-
+    
 @app.route("/detect", methods=["POST"])
 def face_detector():
     return face_controller

@@ -5,6 +5,7 @@ from werkzeug.datastructures import ImmutableMultiDict, FileStorage
 from flask import jsonify
 from PIL import Image
 
+from ..service.image_service import ImageService
 class InvalidImageError(Exception):
     """Custom exception for invalid image errors."""
     def __init__(self, message: str, status_code: int):
@@ -13,7 +14,10 @@ class InvalidImageError(Exception):
         super().__init__(self.message)
 
 class ImageController:
-    VALID_EXTENSIONS = (".jpg", ".jpeg", ".png")
+    
+    def __init__(self) -> None:
+        self.VALID_EXTENSIONS = (".jpg", ".jpeg", ".png")
+        self.image_service = ImageService()
 
     def __is_valid_image(self, files: ImmutableMultiDict[str, FileStorage]) -> Tuple[any, int]:
         """
@@ -52,7 +56,7 @@ class ImageController:
 
         Returns:
             Tuple[Any, int]: First value is the result of the image identification, 
-                             second value is the status code.
+            second value is the status code.
         """
     
         try:
@@ -72,7 +76,7 @@ class ImageController:
             img_shape = image.size # Get dimensions
             
             # Get faces from the image
-            faces = None
+            faces = 0
             
             response = {
                 "faces": faces,
