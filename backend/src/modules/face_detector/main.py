@@ -2,20 +2,16 @@ from datetime import datetime
 
 from flask import Flask, request, jsonify
 
-from .src.controllers.image_controller import ImageController
+from .src.controllers.face_detector_controller import FaceDetectorController
 
 app = Flask(__name__)
-
-img_controller = ImageController()
+face_controller = FaceDetectorController()
 
 server_started_at = datetime.now()
 
-@app.route("/image", methods=["POST"])
-def send_image():
-    try:
-        return img_controller.process_images_handler(request.files)
-    except Exception as e:
-        return jsonify(error=f"Internal Server Error: {str(e)}", status=500), 500
+@app.route("/detect", methods=["POST"])
+def face_detector():
+    return face_controller
 
 def health_check():
     now = datetime.now()
