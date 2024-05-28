@@ -1,0 +1,27 @@
+<main class="main" (dragover)="onDragOver($event)" (drop)="onDrop($event)" (dragleave)="onDragLeave($event)">
+  <div class="drop-dialog">
+    <div class="box">
+      <h1>Suelta la imagen en cualquier lugar</h1>
+    </div>
+  </div>
+  <div class="title">
+    <div class="image-container">
+      <img src="test_logo_2.png">
+    </div>
+    <h1>Censura Automática de Caras</h1>
+    <h2>¡Rápido y Gratuito!</h2>
+  </div>
+  <div class="form">
+    <form>
+      <div *ngIf="selectedFile" class="image-container">
+        <img [src]="imageToShow">
+      </div>
+      <input type="file" class="file-input" (change)="onFileSelected($event)" #fileInput  id="fileInput"/>
+      <label for="fileInput" #fileLabel>{{selectedFile ? selectedFile.name : "Cargar imagen"}}</label>
+      <h3 *ngIf="!selectedFile">o arrastrar archivo.</h3>
+    </form>
+
+  </div>
+  
+
+</main>

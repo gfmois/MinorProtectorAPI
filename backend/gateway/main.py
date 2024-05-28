@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 from src.controllers.image_controller import ImageController
 from src.utils import get_health_check, get_health_from_container
@@ -9,6 +10,7 @@ GATEWAY_INIT = datetime.now()
 img_controller = ImageController()
 
 app = Flask(f"{__name__}_gateway")
+CORS(app)
 
 @app.route("/image", methods=["POST"])
 def send_image():
