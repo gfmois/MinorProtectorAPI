@@ -101,7 +101,7 @@ class ImageController:
         except Exception as e:
             raise ValueError(f"Error while trying to identify_faces: {e}")
     
-    def classificate_faces(self, faces = Any):
+    def classificate_faces(self, faces = Any, original_image: ImageType = None):
         try:
             classificated_faces = self.image_service.identify_age(faces=faces)
             return {

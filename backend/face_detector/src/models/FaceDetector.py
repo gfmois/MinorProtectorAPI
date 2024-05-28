@@ -13,7 +13,10 @@ class FaceDetector():
         )
     
     def identify_faces(self, img_buffer: BytesIO):
-        img = cv2.imdecode(np.frombuffer(img_buffer.read(), np.uint8), 1)
+        img_buffer.seek(0)
+        img_array = np.frombuffer(img_buffer.read(), np.uint8)
+        img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+
         results = self.model(img)
         return results[0]
     

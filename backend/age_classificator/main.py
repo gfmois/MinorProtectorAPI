@@ -1,14 +1,18 @@
 from datetime import datetime
 
-from flask import request, jsonify, Flask
-from flask_socketio import SocketIO, emit
+from flask import jsonify, Flask, request
+from flask_socketio import SocketIO
 from flask_cors import CORS
+
+from src.controller.age_classifier_controller import AgeClassifierController
 
 AGE_CLASSIFICATION_INIT = datetime.now()
 
 app = Flask(f"{__name__}_age_classificator")
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
+
+classifier_controller = AgeClassifierController()
 
 @socketio.on("connect")
 def connection():
@@ -26,9 +30,19 @@ def health_request():
 @app.route("/identify", methods=["POST"])
 def identify_age():
     try:
+        faces = request.json
+        faces = faces["faces"]
+        predictions, status = classifier_controller.predict_is_minor_adult(images=faces)
+        
+        # print(predictions)
+        
+        # if status != 200:
+        #     return jsonify(msg=predictions.json(), status=status)
+        
+        # print(predictions)
         return jsonify(
             detections=[True, False, False, False, False, False, False, False, False, False],
             status=200
         )
     except Exception as e:
-        return jsonify(error=f"Internal Server Error: {str(e)}", status=500), 500
+        return jsonify(error=f"Internal Server Error on idenify: {str(e)}", status=500), 500

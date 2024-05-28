@@ -31,14 +31,18 @@ class ImageService():
         
     def identify_age(self, faces: List[ndarray]):
         response: Response = requests.post(os.environ["AGE_CLASSIFICATOR_HOST"], json={"faces": faces})
-        classifications: List[bool] = response.json()["classifications"]
+        classifications: List[bool] = response.json()
+        values = classifications["detections"]
+        
+        print(values)
         
         # FIXME: Classifications items are string not bool, parse it
         if response.status_code == 200:
-            return {
-                "n_minors": classifications.count(True),
-                "n_adults": classifications.count(False)
-            }
+            return "hello world"
+            # return {
+            #     "n_minors": classifications.count(True),
+            #     "n_adults": classifications.count(False)
+            # }
         else:
             print("Not Working")
             return 0

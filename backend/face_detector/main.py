@@ -15,7 +15,6 @@ socketio = SocketIO(app, cors_allowed_origins="*")
     
 @app.route("/detect", methods=["POST"])
 def face_detector():
-    # NOTE: pass to socket?
     return face_controller.detect_face(request.files)
 
 @socketio.on("connect")

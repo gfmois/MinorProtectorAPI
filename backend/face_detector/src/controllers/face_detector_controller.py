@@ -1,7 +1,11 @@
 from io import BytesIO
-from flask import jsonify
 from typing import Tuple
+
+import cv2
+from flask import jsonify
 from werkzeug.datastructures import ImmutableMultiDict, FileStorage
+from PIL import Image
+import numpy as np
 
 from src.models.FaceDetector import FaceDetector
 
@@ -54,21 +58,31 @@ class FaceDetectorController():
             
             image = files["image"]
             image_bytes = BytesIO(image.stream.read())
-            faces = self.face_detector_model.identify_faces(image_bytes)
-            face_boxes = faces.boxes
+            image_bytes.seek(0)
             
-            self.face_detector_model.pixelate_faces(
-                original_img=image_bytes, 
-                face_boxes=face_boxes
-            )
+            img = Image.open(image_bytes)
+            img_arr = np.array(img)
             
-            return jsonify(faces=len(faces))
+            image_bytes.seek(0)
+            identified_faces = self.face_detector_model.identify_faces(image_bytes)
+            face_boxes = identified_faces.boxes
+            faces = []
+            
+            for box in face_boxes:
+                x_min, y_min, x_max, y_max = map(int, box.xyxy.tolist()[0])
+                face = img_arr[y_min:y_max, x_min:x_max]
+                faces.append(face.tolist())
+                
+            return jsonify(faces=faces)
         except InvalidImageError as e:
+            print("Image error")
             return jsonify(
                 msg=e.message,
                 status=e.status_code
             ), e.status_code
         except Exception as e:
+            print("Exception Error")
+            print(e)
             return jsonify(
                 msg=str(e),
                 status=500
