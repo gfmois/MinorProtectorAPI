@@ -6,6 +6,7 @@ from flask import jsonify
 from PIL import Image
 
 from ..service.image_service import ImageService
+
 class InvalidImageError(Exception):
     """Custom exception for invalid image errors."""
     def __init__(self, message: str, status_code: int):

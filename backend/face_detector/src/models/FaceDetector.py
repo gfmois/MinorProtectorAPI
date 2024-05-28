@@ -1,3 +1,4 @@
+import os
 from ultralytics import YOLO
 import numpy as np
 from io import BytesIO
@@ -6,15 +7,18 @@ import cv2
 # FIXME: Type all methods
 class FaceDetector():
     def __init__(self) -> None:
-        self.model = YOLO("../data/YOLOv8_face_detection.pt", task="detect")
+        self.model = YOLO(os.path.join(
+            os.getcwd(), "./src/data/YOLOv8_face_detection.pt"), 
+            task="detect"
+        )
     
     def identify_faces(self, img_buffer: BytesIO):
         img = cv2.imdecode(np.frombuffer(img_buffer.read(), np.uint8), 1)
         results = self.model(img)
-        return results
+        return results[0]
     
     def get_boxes(self, results):
-        return results[0].boxes
+        return results.boxes
     
     def pixelate(self, img, pixel_size = (20, 20)):
         height, width = img.shape[:2]

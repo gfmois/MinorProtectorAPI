@@ -3,3 +3,4 @@ datasets
 runs
 __pycache__
 venv
+.env
