@@ -20,28 +20,28 @@ class FaceDetector():
     def get_boxes(self, results):
         return results.boxes
     
-    def pixelate(self, img, pixel_size = (20, 20)):
-        height, width = img.shape[:2]
-        small_image = cv2.resize(img, (width // pixel_size, height // pixel_size))
+    def pixelate(self, face: np.ndarray, pixel_size=(20, 20)):
+        height, width = face.shape[:2]
+        small_image = cv2.resize(face, (width // pixel_size[0], height // pixel_size[1]))
         pixelated_image = cv2.resize(small_image, (width, height), interpolation=cv2.INTER_NEAREST)
-        
+
         return pixelated_image
     
-    def pixelate_faces(self, img: BytesIO):
-        results = self.identify_faces(img_buffer=img)
-        boxes = self.get_boxes(results)
+    def pixelate_faces(self, original_img: BytesIO, face_boxes):
+        try:
+            original_img.seek(0)
+            file_bytes = np.asarray(bytearray(original_img.read()), dtype=np.uint8)
+            _img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
         
-        # NOTE: test this
-        _img = cv2.imread(img)
-        
-        for box in boxes:
-            x_min, y_min, x_max, y_max = map(int, box.xyxy.tolist()[0])
-            
-            face = _img[y_min:y_max, x_min:x_max]
-            blur_face = self.pixelate(_img)
-            
-            _img[y_min:y_max, x_min:x_max] = blur_face
-            
+            for box in face_boxes:
+                x_min, y_min, x_max, y_max = map(int, box.xyxy.tolist()[0])
+                
+                face = _img[y_min:y_max, x_min:x_max]
+                blur_face = self.pixelate(face)
+                
+                _img[y_min:y_max, x_min:x_max] = blur_face
+                
             cv2.imwrite("./blur_image.png", _img)
-            
             return _img
+        except Exception as e:
+            raise ValueError(f"Error while trying to pixelate the faces: {e}")

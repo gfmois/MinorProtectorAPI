@@ -51,6 +51,18 @@ class FaceDetectorController():
             json_msg, status = self.__is_valid_image(files=files)
             if status != 200:
                 return json_msg, status
+            
+            image = files["image"]
+            image_bytes = BytesIO(image.stream.read())
+            faces = self.face_detector_model.identify_faces(image_bytes)
+            face_boxes = faces.boxes
+            
+            self.face_detector_model.pixelate_faces(
+                original_img=image_bytes, 
+                face_boxes=face_boxes
+            )
+            
+            return jsonify(faces=len(faces))
         except InvalidImageError as e:
             return jsonify(
                 msg=e.message,
@@ -61,8 +73,3 @@ class FaceDetectorController():
                 msg=str(e),
                 status=500
             ), 500
-            
-        image = files["image"]
-        image_bytes = BytesIO(image.stream.read())
-        faces = self.face_detector_model.identify_faces(image_bytes)
-        return jsonify(faces=len(faces))
