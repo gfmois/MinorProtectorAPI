@@ -2,10 +2,12 @@ from io import BytesIO
 from typing import Tuple, Any
 
 from werkzeug.datastructures import ImmutableMultiDict, FileStorage
-from flask import jsonify
+from flask import jsonify, Response
 from PIL import Image
+from PIL.Image import Image as ImageType
 
 from ..service.image_service import ImageService
+
 class InvalidImageError(Exception):
     """Custom exception for invalid image errors."""
     def __init__(self, message: str, status_code: int):
@@ -19,7 +21,7 @@ class ImageController:
         self.VALID_EXTENSIONS = (".jpg", ".jpeg", ".png")
         self.image_service = ImageService()
 
-    def __is_valid_image(self, files: ImmutableMultiDict[str, FileStorage]) -> Tuple[any, int]:
+    def __is_valid_image(self, files: ImmutableMultiDict[str, FileStorage]) -> Tuple[Response, int]:
         """
         Private method that checks if the file exists and is valid.
         
@@ -47,16 +49,14 @@ class ImageController:
         except InvalidImageError as e:
             return jsonify(msg=e.message, status=e.status_code), e.status_code
             
-    def process_images_handler(self, files: ImmutableMultiDict[str, FileStorage]) -> Tuple[Any, int]:
+    def process_images_handler(self, files: ImmutableMultiDict[str, FileStorage]) -> Tuple[ImageType, Tuple[int, int]] | Tuple[Response, int]:
         """
-        Handler for the POST route that processes the image to identify the number in it.
+        Handler for the POST route that processes the image.
 
         Args:
             files (ImmutableMultiDict[str, FileStorage]): Files from the request form-data
 
-        Returns:
-            Tuple[Any, int]: First value is the result of the image identification, 
-            second value is the status code.
+        Returns: Image preprocessed to identify number of faces.
         """
     
         try:
@@ -75,17 +75,7 @@ class ImageController:
             image = Image.open(image_bytes)
             img_shape = image.size # Get dimensions
             
-            # Get faces from the image
-            # NOTE: call image_service
-            faces = self.image_service.detect_face(image)
-            
-            response = {
-                "faces": faces,
-                "status": 200,
-                "img_shape": img_shape
-            }
-            
-            return jsonify(msg=response, status=200), 200
+            return image, img_shape
         except InvalidImageError as e:
             return jsonify(
                 msg=e.message,
@@ -96,3 +86,27 @@ class ImageController:
                 msg=str(e),
                 status=500
             ), 500
+            
+    def identify_faces(self, image: ImageType, image_shape: Tuple[int, int]) -> Tuple[Response, int]:
+        try:
+            response = self.image_service.detect_face(image)
+            
+            response = {
+                "faces": response,
+                "status": 200,
+                "img_shape": image_shape
+            }
+            
+            return response, 200
+        except Exception as e:
+            raise ValueError(f"Error while trying to identify_faces: {e}")
+    
+    def classificate_faces(self, faces = Any):
+        try:
+            classificated_faces = self.image_service.identify_age(faces=faces)
+            return {
+                "classification": classificated_faces,
+                "status": 200
+            }, 200
+        except Exception as e:
+            return f"Error while trying to classificate faces: {e}", 500
