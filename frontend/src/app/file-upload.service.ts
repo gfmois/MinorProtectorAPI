@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class FileUploadService {
-  private uploadUrl = 'http://localhost:5001/image';
+  private uploadUrl = 'http://gateway:3000/image';
 
   constructor(private http: HttpClient) { }
 
