@@ -17,18 +17,16 @@
         <img [src]="imageToShow">
       </div>
       <input type="file" class="file-input" (change)="onFileSelected($event)" #fileInput  id="fileInput"/>
-      <label for="fileInput" #fileLabel>{{selectedFile ? selectedFile.name : "Cargar imagen"}}</label>
-      <h3 *ngIf="!selectedFile">o arrastrar archivo.</h3>
     </form>
+    <label for="fileInput" #fileLabel>{{selectedFile ? selectedFile.name : "Cargar imagen"}}</label>
+    <h3 *ngIf="!selectedFile">o arrastrar archivo.</h3>
 
   </div>
   <div class="form form-image" *ngIf="receivedImage">
-    <form>
       <div class="image-container">
         <img [src]="receivedImage">
-        <button class="download-button" (click)="downloadImage(receivedImage)">Descargar</button>
       </div>
-    </form>
+      <button class="download-button" (click)="downloadImage(receivedImage)">Descargar</button>
   </div>
   
 
