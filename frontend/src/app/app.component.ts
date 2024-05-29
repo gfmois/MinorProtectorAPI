@@ -27,7 +27,8 @@ export class AppComponent {
 
   // Functionality
 
-  onFileSelected(event: Event): void {    
+  onFileSelected(event: Event): void {   
+    this.receivedImage = null 
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
