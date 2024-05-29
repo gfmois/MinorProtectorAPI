@@ -10,15 +10,14 @@ import socketio
 from src.controllers.image_controller import ImageController
 from src.utils import get_health_check, get_health_from_container
 
-
 app = Flask(f"{__name__}_gateway")
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})  # Permite CORS para todos los dominios en todas las rutasCORS(app)
 cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache'})
 face_detector_client = socketio.Client()
 age_detector_client = socketio.Client()
 
-face_detector_client.connect('http://localhost:5000')
-age_detector_client.connect('http://localhost:5002')
+face_detector_client.connect('http://face_detector:5000')
+age_detector_client.connect('http://age_classificator:5002')
 
 GATEWAY_INIT = datetime.now()
 img_controller = ImageController()
@@ -68,4 +67,5 @@ def health_check():
         "age_classificator": get_health_check(server_started_at=age_detector_health_data)
     }
 
+    return jsonify(health_info)
     return jsonify(health_info)

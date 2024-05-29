@@ -4,11 +4,8 @@ runs
 __pycache__
 venv
 .env
-<<<<<<< HEAD
 *.png
 *.jpg
 *.jpeg
-=======
 .vscode
 .angular
->>>>>>> ximo-dev
