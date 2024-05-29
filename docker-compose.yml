@@ -1,34 +1,48 @@
 version: '3.2'
 services:
   age_classificator:
-    image: python:3.13.0b1-alpine
+    image: python:3.10.12
     container_name: age_classificator
     restart: always
     volumes:
       - ./backend/age_classificator:/app
+    ports:
+      - 5002:5002
     command: > 
-      /bin/sh -c "apk update && apk add build-base && apk add --no-cache make && 
-      pip install -r /app/requirements.txt && 
+      /bin/bash -c "apt-get update > /dev/null 2>&1 && apt-get install -y build-essential python3-venv libgl1-mesa-glx > /dev/null 2>&1 && 
+      python3 -m venv /app/venv > /dev/null 2>&1 &&
+      source /app/venv/bin/activate > /dev/null 2>&1 &&
+      pip install -r /app/requirements.txt > /dev/null 2>&1 && 
       cd /app && make"
     networks:
       - backend-network
+    environment:
+      - SOCKETIO_PORT=5002
 
   face_detector:
-    image: python:3.13.0b1-alpine
+    image: python:3.10.12
     container_name: face_detector
     restart: always
     volumes:
       - ./backend/face_detector:/app
+    ports:
+      - 5000:5000
     command: >
-      /bin/sh -c "apk update && apk add build-base && apk add --no-cache build-base libffi-dev openblas-dev gfortran py3-pip &&
-      pip install --no-cache-dir numpy &&
-      pip install --no-cache-dir opencv-python-headless &&
+      /bin/bash -c "apt-get update > /dev/null 2>&1 && apt-get install -y build-essential libffi-dev libopenblas-dev gfortran python3-pip python3-venv libgl1-mesa-glx > /dev/null 2>&1 &&
+      python3 -m venv /app/venv > /dev/null 2>&1 &&
+      source /app/venv/bin/activate > /dev/null 2>&1 &&
+      pip install Flask flask-socketio flask-cors Pillow ultralytics > /dev/null 2>&1 &&
+      pip install --no-cache-dir numpy > /dev/null 2>&1 &&
+      pip install --no-cache-dir opencv-python-headless > /dev/null 2>&1 &&
       cd /app && make"
     networks:
       - backend-network
+    environment:
+      - SOCKETIO_PORT=5000
 
+  # FIXME: Fix max retries of face_detector and age_classificator socketio connections
   gateway:
-    image: python:3.13.0b1-alpine
+    image: python:3.10.12
     container_name: gateway
     depends_on:
       - face_detector
@@ -39,9 +53,15 @@ services:
     ports:
       - 80:5001
     command: >
-      /bin/sh -c "apk update && apk add build-base && apk add --no-cache make && pip install -r /app/requirements.txt && cd /app && make"
+      /bin/bash -c "apt-get update > /dev/null 2>&1 && apt-get install -y build-essential python3-venv libgl1-mesa-glx > /dev/null 2>&1 && 
+      python3 -m venv /app/venv > /dev/null 2>&1 &&
+      source /app/venv/bin/activate > /dev/null 2>&1 &&
+      pip install -r /app/requirements.txt > /dev/null 2>&1 && 
+      cd /app && make"
     networks:
       - backend-network
+    environment:
+      - FLASK_APP=main.py
 
   # frontend:
   #   build:

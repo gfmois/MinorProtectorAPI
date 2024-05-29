@@ -16,8 +16,8 @@ cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache'})
 face_detector_client = socketio.Client()
 age_detector_client = socketio.Client()
 
-face_detector_client.connect('http://localhost:5000')
-age_detector_client.connect('http://localhost:5002')
+face_detector_client.connect('http://face_detector:5000')
+age_detector_client.connect('http://age_classificator:5002')
 
 GATEWAY_INIT = datetime.now()
 img_controller = ImageController()
