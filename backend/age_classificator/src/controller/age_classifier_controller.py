@@ -52,7 +52,7 @@ class AgeClassifierController:
         if not isinstance(img, np.ndarray):
             raise TypeError("img debe ser un np.ndarray")
         
-        _, buffer = cv2.imencode('.jpg', img)
+        _, buffer = cv2.imencode('.png', img)
         imagen_cargada = cv2.imdecode(buffer, cv2.IMREAD_COLOR)
         imagen_cargada_rgb = cv2.cvtColor(imagen_cargada, cv2.COLOR_BGR2RGB)  # Convert to RGB
         img_resized = cv2.resize(imagen_cargada_rgb, (img_width, img_height))
