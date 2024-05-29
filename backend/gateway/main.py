@@ -4,7 +4,6 @@ from datetime import datetime
 
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
-from flask_caching import Cache
 from PIL.Image import Image as ImageType
 import socketio
 
@@ -13,7 +12,6 @@ from src.utils import get_health_check, get_health_from_container
 
 app = Flask(f"{__name__}_gateway")
 CORS(app, resources={r"/*": {"origins": "*"}})  # Permite CORS para todos los dominios en todas las rutasCORS(app)
-cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache'})
 face_detector_client = socketio.Client()
 age_detector_client = socketio.Client()
 
@@ -49,7 +47,6 @@ def send_image():
         return jsonify(error=f"Internal Server Error: {str(e)}", status=500), 500
 
 @app.route("/health")
-@cache.cached(timeout=50)
 def health_check():
     try:
         # Retrieve health data from face_detector
