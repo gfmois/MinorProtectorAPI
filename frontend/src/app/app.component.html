@@ -22,6 +22,11 @@
     </form>
 
   </div>
+  <div class="form" *ngIf="receivedImage">
+      <div class="image-container">
+        <img [src]="receivedImage">
+      </div>
+  </div>
   
 
 </main>

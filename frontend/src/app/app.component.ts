@@ -18,6 +18,7 @@ export class AppComponent {
 
   selectedFile: File | null = null;
   imageToShow: string | ArrayBuffer | null = null;
+  receivedImage: string | null = null;
 
   constructor(
     private fileUploadService: FileUploadService,
@@ -40,10 +41,19 @@ export class AppComponent {
     if (this.selectedFile) {
       this.fileUploadService.uploadFile(this.selectedFile).subscribe(
         response => {
-          console.log(response);
-          // this.toastr.success(response.msg.faces.msg,'La subida del archivo ha sido exitosa');          
+          // NOT WORKING
+          const blob = new Blob([response], { type: 'image/jpeg' });
+          this.selectedFile = new File([blob], "response.jpeg", { type: 'image/jpeg' });
+          console.log('Imagen recibida y guardada como selectedFile');
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.receivedImage = e.target?.result as string; // Almacenar la imagen recibida para mostrar
+          };
+          reader.readAsDataURL(blob);
+          // this.toastr.success('La imagen ha sido procesada y guardada correctamente', 'La subida del archivo ha sido exitosa');
         },
         error => {
+          console.log(error)
           this.toastr.error(error.error.msg, 'La subida del archivo ha fallado');
         }
       );

@@ -4,7 +4,6 @@ services:
     image: python:3.10.12
     container_name: age_classificator
     restart: always
-    image: python:3.10.2
     volumes:
       - ./backend/age_classificator:/app
     command: > 
