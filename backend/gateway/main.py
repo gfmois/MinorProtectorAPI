@@ -1,9 +1,10 @@
+from io import BytesIO
 from datetime import datetime
-import json
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from flask_caching import Cache
+from PIL.Image import Image as ImageType
 import socketio
 
 from src.controllers.image_controller import ImageController
@@ -27,12 +28,20 @@ def send_image():
     try:
         processed_image = img_controller.process_images_handler(request.files)
         response, status = img_controller.identify_faces(*processed_image)
-        boxes = response["faces"]["faces"]
+        faces = response["faces"]["faces"]
+        boxes = response["faces"]["boxes"]
         
         if status != 200:
             return jsonify(msg=response["faces"], status=response["status"])
         
-        response, status = img_controller.classificate_faces(faces=boxes, original_image=processed_image[0])
+        response, status = img_controller.classificate_faces(faces=faces, boxes=boxes, original_image=processed_image[0])
+        
+        if isinstance(response, ImageType):
+            img_io = BytesIO()
+            response.save(img_io, "JPEG")
+            img_io.seek(0)
+            return send_file(img_io, mimetype="image/jpeg")
+        
         return jsonify(response=response.json(), status=status), status
     except Exception as e:
         return jsonify(error=f"Internal Server Error: {str(e)}", status=500), 500

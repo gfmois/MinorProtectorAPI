@@ -54,37 +54,13 @@ class AgeClassifierController:
         
         _, buffer = cv2.imencode('.jpg', img)
         imagen_cargada = cv2.imdecode(buffer, cv2.IMREAD_COLOR)
-        img_resized = cv2.resize(imagen_cargada, (img_width, img_height))
+        imagen_cargada_rgb = cv2.cvtColor(imagen_cargada, cv2.COLOR_BGR2RGB)  # Convert to RGB
+        img_resized = cv2.resize(imagen_cargada_rgb, (img_width, img_height))
         img_normalized = img_resized.astype('float32') / 255.0
-        img_expanded = np.expand_dims(img_normalized, axis=0)
-
-        if save_path:
-            cv2.imwrite(save_path, (img_normalized * 255).astype('uint8'))
-
-        return img_expanded
-
-    def resize_image(self, img_bytes: np.ndarray, img_width = 200, img_height = 200, save_path = False) -> np.ndarray:
-        """
-        Resizes the image to 200x200 pixels if it is not already this size.
-
-        Args:
-            image_file (FileStorage): The image file to resize.
-
-        Returns:
-            np.ndarray: The resized image as a numpy array.
-        """
-        # Convertimos la imagen PIL a una matriz numpy
-        img_np = np.array(img_bytes)
         
-        # Redimensionamos la imagen
-        img_resized = cv2.resize(img_np, (img_width, img_height))
-        # Normalizamos la imagen
-        img_normalized = img_resized.astype('float32') / 255.0
-        # Expandimos las dimensiones de la imagen para que sea compatible con el modelo
         img_expanded = np.expand_dims(img_normalized, axis=0)
 
         if save_path:
-            # Guardamos la imagen preprocesada si se especifica una ruta de guardado
             cv2.imwrite(save_path, (img_normalized * 255).astype('uint8'))
 
         return img_expanded
@@ -97,7 +73,7 @@ class AgeClassifierController:
              
             # Pass the numpy array (resized image) directly to the classifier
             predictions = [self.classifier_service.make_prediction(image) for image in resized_images]
-            umbral_predictions = [1 if prediction[0][0] > 0.6 else 0 for prediction in predictions]
+            umbral_predictions = [1 if prediction[0][0] > 0.4 else 0 for prediction in predictions]
             
             predictions_serialized = [str(pred[0][0]) for pred in predictions]
             

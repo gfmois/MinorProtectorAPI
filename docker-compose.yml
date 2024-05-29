@@ -1,47 +1,43 @@
 version: '3.2'
 services:
   age_classificator:
-    image: python:3.13.0b1-alpine
     container_name: age_classificator
     restart: always
+    image: python:3.10.2
     volumes:
       - ./backend/age_classificator:/app
-    command: > 
-      /bin/sh -c "apk update && apk add build-base && apk add --no-cache make && 
-      pip install -r /app/requirements.txt && 
-      cd /app && make"
-    networks:
-      - backend-network
+    command: bash -c "apt update && apt install -y python3-venv libgl1-mesa-glx build-essential && python3 -m venv venv && source venv/bin/activate && pip install uv && apt install -y make && pip install -r /app/requirements.txt && python /app/main.py"
 
-  face_detector:
-    image: python:3.13.0b1-alpine
-    container_name: face_detector
-    restart: always
-    volumes:
-      - ./backend/face_detector:/app
-    command: >
-      /bin/sh -c "apk update && apk add build-base && apk add --no-cache build-base libffi-dev openblas-dev gfortran py3-pip &&
-      pip install --no-cache-dir numpy &&
-      pip install --no-cache-dir opencv-python-headless &&
-      cd /app && make"
-    networks:
-      - backend-network
 
-  gateway:
-    image: python:3.13.0b1-alpine
-    container_name: gateway
-    depends_on:
-      - face_detector
-      - age_classificator
-    restart: always
-    volumes:
-      - ./backend/gateway:/app
-    ports:
-      - 80:5001
-    command: >
-      /bin/sh -c "apk update && apk add build-base && apk add --no-cache make && pip install -r /app/requirements.txt && cd /app && make"
-    networks:
-      - backend-network
+  # face_detector:
+  #   image: python:3.13.0b1-alpine
+  #   container_name: face_detector
+  #   restart: always
+  #   volumes:
+  #     - ./backend/face_detector:/app
+  #   command: >
+  #     /bin/sh -c "apk update && apk add build-base && apk add --no-cache build-base libffi-dev openblas-dev gfortran py3-pip &&
+  #     pip install --no-cache-dir numpy &&
+  #     pip install --no-cache-dir opencv-python-headless &&
+  #     cd /app && make"
+  #   networks:
+  #     - backend-network
+
+  # gateway:
+  #   image: python:3.13.0b1-alpine
+  #   container_name: gateway
+  #   depends_on:
+  #     - face_detector
+  #     - age_classificator
+  #   restart: always
+  #   volumes:
+  #     - ./backend/gateway:/app
+  #   ports:
+  #     - 80:5001
+  #   command: >
+  #     /bin/sh -c "apk update && apk add build-base && apk add --no-cache make && pip install -r /app/requirements.txt && cd /app && make"
+  #   networks:
+  #     - backend-network
 
   # frontend:
   #   build:

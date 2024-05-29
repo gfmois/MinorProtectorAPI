@@ -1,10 +1,15 @@
 from io import BytesIO
+from string import punctuation
 from typing import Tuple, Any
+from scipy.datasets import face
+from sympy import true
 
 from werkzeug.datastructures import ImmutableMultiDict, FileStorage
 from flask import jsonify, Response
-from PIL import Image
+from PIL import Image, ImageDraw
 from PIL.Image import Image as ImageType
+import numpy as np
+import cv2
 
 from ..service.image_service import ImageService
 
@@ -101,11 +106,29 @@ class ImageController:
         except Exception as e:
             raise ValueError(f"Error while trying to identify_faces: {e}")
     
-    def classificate_faces(self, faces = Any, original_image: ImageType = None):
+    def classificate_faces(self, faces = Any, boxes = None, original_image: ImageType = None):
         try:
             classificated_faces, status = self.image_service.identify_age(faces=faces)
+            predictions = classificated_faces.json()
+            isMinor, score = zip(*predictions["predictions"])
+            pil_image = original_image.convert("RGB")
+            
+            for i, box in enumerate(boxes):
+                x_min, y_min, x_max, y_max = box
+                w, h = x_max - x_min, y_max - y_min
+
+                if isMinor[i] == 1:
+                    # Si es menor, pixela la cara
+                    face_region = pil_image.crop((x_min, y_min, x_max, y_max))
+                    face_region = face_region.resize((w // 10, h // 10), resample=Image.BILINEAR)
+                    face_region = face_region.resize((w, h), Image.NEAREST)
+                    pil_image.paste(face_region, (x_min, y_min))
+                      
+            print(score)
+            print(isMinor)
+                        
             if status == 200:
-                return classificated_faces, status
+                return pil_image, 200
 
             else:
                 return jsonify(

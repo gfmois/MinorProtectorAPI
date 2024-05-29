@@ -67,14 +67,15 @@ class FaceDetectorController():
             identified_faces = self.face_detector_model.identify_faces(image_bytes)
             face_boxes = identified_faces.boxes
             faces = []
+            boxes = []
             
             for box in face_boxes:
                 x_min, y_min, x_max, y_max = map(int, box.xyxy.tolist()[0])
                 face: np.ndarray = img_arr[y_min:y_max, x_min:x_max]
-                print(face.shape)
                 faces.append(face.tolist())
+                boxes.append(list(map(int, box.xyxy.tolist()[0])))
                 
-            return jsonify(faces=faces)
+            return jsonify(faces=faces, boxes=boxes)
         except InvalidImageError as e:
             print("Image error")
             return jsonify(
