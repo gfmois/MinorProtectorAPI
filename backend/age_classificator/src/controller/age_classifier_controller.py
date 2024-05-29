@@ -3,6 +3,7 @@ import logging
 from typing import Tuple, List
 import numpy as np
 from PIL import Image
+from PIL.Image import Image as ImageType
 import cv2
 
 from werkzeug.datastructures import ImmutableMultiDict, FileStorage
@@ -47,13 +48,13 @@ class AgeClassifierController:
         
         return jsonify(msg="File is valid", status=200), 200
     
-    def preprocess_image(self, img, img_width = 200, img_height = 200, save_path=None):
+    def preprocess_image(self, img: np.ndarray, img_width = 200, img_height = 200, save_path=None):
         if not isinstance(img, np.ndarray):
             raise TypeError("img debe ser un np.ndarray")
         
-        print(img.shape)
-        
-        img_resized = cv2.resize(img, (img_width, img_height))
+        _, buffer = cv2.imencode('.jpg', img)
+        imagen_cargada = cv2.imdecode(buffer, cv2.IMREAD_COLOR)
+        img_resized = cv2.resize(imagen_cargada, (img_width, img_height))
         img_normalized = img_resized.astype('float32') / 255.0
         img_expanded = np.expand_dims(img_normalized, axis=0)
 
@@ -72,10 +73,8 @@ class AgeClassifierController:
         Returns:
             np.ndarray: The resized image as a numpy array.
         """
-         # Convertimos BytesIO a una imagen PIL
-        img_pil = Image.open(img_bytes)
         # Convertimos la imagen PIL a una matriz numpy
-        img_np = np.array(img_pil)
+        img_np = np.array(img_bytes)
         
         # Redimensionamos la imagen
         img_resized = cv2.resize(img_np, (img_width, img_height))
@@ -93,16 +92,18 @@ class AgeClassifierController:
     def predict_is_minor_adult(self, images: List[List[List[int]]]):
         try:
             # Resize the image if necessary
-            print(images[0])
-            # resized_images = [self.resize_image(np.ndarray(image)) for image in images]
-            # expanded_images = [np.expand_dims(img, axis=0) for img in resized_images]
-            
+            nparrays = [np.array(image) for image in images]
+            resized_images = [self.preprocess_image(img=img) for img in nparrays]
+             
             # Pass the numpy array (resized image) directly to the classifier
-            # predictions = [self.classifier_service.make_prediction(image) for image in expanded_images]
-            # umbral_predictions = [1 if prediction[0][0] > 0.5 else 0 for prediction in predictions]
+            predictions = [self.classifier_service.make_prediction(image) for image in resized_images]
+            umbral_predictions = [1 if prediction[0][0] > 0.6 else 0 for prediction in predictions]
             
-            # print(umbral_predictions)
-            return jsonify(predictions=[]), 200
+            predictions_serialized = [str(pred[0][0]) for pred in predictions]
+            
+            to_return = list(zip(umbral_predictions, predictions_serialized))
+            
+            return jsonify(predictions=to_return), 200
         except Exception as e:
             logging.error(f"Error during prediction: {str(e)}")
             return jsonify(msg="Error processing the image", status=500), 500

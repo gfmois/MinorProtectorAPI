@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 
 from flask import Flask, request, jsonify
 from flask_caching import Cache
@@ -30,12 +31,9 @@ def send_image():
             return jsonify(msg=response["faces"], status=response["status"])
         
         response, status = img_controller.classificate_faces(faces=boxes, original_image=processed_image[0])
-        if status != 200:
-            return jsonify(msg=response["classification"], status=response["status"])
-
-        return jsonify(response)
+        return jsonify(response=response.json(), status=status), status
     except Exception as e:
-        return jsonify(error=f"Internal Server Error: {str(e)}", status=500)
+        return jsonify(error=f"Internal Server Error: {str(e)}", status=500), 500
 
 @app.route("/health")
 @cache.cached(timeout=50)

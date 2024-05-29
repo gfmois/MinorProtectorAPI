@@ -34,15 +34,9 @@ def identify_age():
         faces = faces["faces"]
         predictions, status = classifier_controller.predict_is_minor_adult(images=faces)
         
-        # print(predictions)
+        if status != 200:
+            return jsonify(msg=predictions.json(), status=status)
         
-        # if status != 200:
-        #     return jsonify(msg=predictions.json(), status=status)
-        
-        # print(predictions)
-        return jsonify(
-            detections=[True, False, False, False, False, False, False, False, False, False],
-            status=200
-        )
+        return predictions
     except Exception as e:
         return jsonify(error=f"Internal Server Error on idenify: {str(e)}", status=500), 500

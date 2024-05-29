@@ -70,7 +70,8 @@ class FaceDetectorController():
             
             for box in face_boxes:
                 x_min, y_min, x_max, y_max = map(int, box.xyxy.tolist()[0])
-                face = img_arr[y_min:y_max, x_min:x_max]
+                face: np.ndarray = img_arr[y_min:y_max, x_min:x_max]
+                print(face.shape)
                 faces.append(face.tolist())
                 
             return jsonify(faces=faces)

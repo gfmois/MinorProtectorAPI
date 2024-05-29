@@ -103,10 +103,14 @@ class ImageController:
     
     def classificate_faces(self, faces = Any, original_image: ImageType = None):
         try:
-            classificated_faces = self.image_service.identify_age(faces=faces)
-            return {
-                "classification": classificated_faces,
-                "status": 200
-            }, 200
+            classificated_faces, status = self.image_service.identify_age(faces=faces)
+            if status == 200:
+                return classificated_faces, status
+
+            else:
+                return jsonify(
+                    msg=f"Error while trying to classificate_faces: {classificated_faces}",
+                    status=status
+                )
         except Exception as e:
             return f"Error while trying to classificate faces: {e}", 500
