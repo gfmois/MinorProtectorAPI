@@ -40,7 +40,8 @@ export class AppComponent {
     if (this.selectedFile) {
       this.fileUploadService.uploadFile(this.selectedFile).subscribe(
         response => {
-          this.toastr.success(response.msg.faces.msg,'La subida del archivo ha sido exitosa');          
+          console.log(response);
+          // this.toastr.success(response.msg.faces.msg,'La subida del archivo ha sido exitosa');          
         },
         error => {
           this.toastr.error(error.error.msg, 'La subida del archivo ha fallado');

@@ -3,10 +3,6 @@ datasets
 runs
 __pycache__
 venv
-<<<<<<< HEAD
 .env
 .vscode
 .angular
-=======
-.env
->>>>>>> main
