@@ -1,4 +1,7 @@
 flask
+flask-socketio
+flask-cors
 requests
+numpy
 ultralytics
 opencv-python
