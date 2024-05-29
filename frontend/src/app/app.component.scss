@@ -84,13 +84,31 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
             img {
-                width: 100%;
+                max-width: 100%;
                 height: auto;
             }
             margin-bottom: 30px;
+            .download-button {
+                max-width: fit-content;
+                color: white;
+                font-size: 1.5rem;
+                font-weight: 700;
+                background-color: #002e5f;
+                padding: 20px;
+                border-radius: 50px;
+                cursor: pointer;
+                
+            }
         }
     }    
+    .form-image {
+        // padding: 0 !important;
+        img {
+            margin-bottom: 20px;
+        }
+    }
 }
 
 

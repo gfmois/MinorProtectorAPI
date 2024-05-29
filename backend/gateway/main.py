@@ -1,3 +1,4 @@
+import base64
 from io import BytesIO
 from datetime import datetime
 
@@ -39,7 +40,9 @@ def send_image():
             img_io = BytesIO()
             response.save(img_io, "JPEG")
             img_io.seek(0)
-            return send_file(img_io, mimetype="image/jpeg")
+            img_data = img_io.getvalue()
+            img_base64 = base64.b64encode(img_data).decode('utf-8')
+            return jsonify(image=f"data:image/jpeg;base64,{img_base64}")
         
         return jsonify(response=response.json(), status=status), status
     except Exception as e:

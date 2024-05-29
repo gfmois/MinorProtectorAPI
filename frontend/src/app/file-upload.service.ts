@@ -13,6 +13,11 @@ export class FileUploadService {
   uploadFile(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('image', file);
-    return this.http.post(this.uploadUrl, formData);
+    try {
+      return this.http.post(this.uploadUrl, formData);
+    } catch (error) {
+      console.error('Error al subir el archivo:', error);
+      throw error;
+    }
   }
 }

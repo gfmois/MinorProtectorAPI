@@ -36,29 +36,20 @@ export class AppComponent {
     }
   }
 
-
   submitImage() {
     if (this.selectedFile) {
       this.fileUploadService.uploadFile(this.selectedFile).subscribe(
         response => {
-          // NOT WORKING
-          const blob = new Blob([response], { type: 'image/jpeg' });
-          this.selectedFile = new File([blob], "response.jpeg", { type: 'image/jpeg' });
-          console.log('Imagen recibida y guardada como selectedFile');
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            this.receivedImage = e.target?.result as string; // Almacenar la imagen recibida para mostrar
-          };
-          reader.readAsDataURL(blob);
-          // this.toastr.success('La imagen ha sido procesada y guardada correctamente', 'La subida del archivo ha sido exitosa');
+          this.receivedImage = response.image; // Almacenar la URL de la imagen recibida para mostrar
+          this.toastr.success('La imagen ha sido procesada y guardada correctamente', 'La subida del archivo ha sido exitosa');
         },
         error => {
-          console.log(error)
+          console.log(error);
           this.toastr.error(error.error.msg, 'La subida del archivo ha fallado');
         }
       );
     } else {
-      this.toastr.error('No file selected', 'La subida del archivo ha fallado');
+      this.toastr.error('No se ha seleccionado ningún archivo', 'La subida del archivo ha fallado');
     }
   }
 
@@ -106,6 +97,15 @@ export class AppComponent {
         mainElement.classList.remove('dragover');
       }
     }
+  }
+  downloadImage(imageUrl: string) {
+    // Crear un elemento <a> temporal para simular un click de descarga
+    const downloadLink = document.createElement('a');
+    downloadLink.href = imageUrl;
+    downloadLink.download = 'imagen_descargada.jpg'; // Nombre del archivo a descargar
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
   }
 
 }

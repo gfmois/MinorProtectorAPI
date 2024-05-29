@@ -22,10 +22,13 @@
     </form>
 
   </div>
-  <div class="form" *ngIf="receivedImage">
+  <div class="form form-image" *ngIf="receivedImage">
+    <form>
       <div class="image-container">
         <img [src]="receivedImage">
+        <button class="download-button" (click)="downloadImage(receivedImage)">Descargar</button>
       </div>
+    </form>
   </div>
   
 
