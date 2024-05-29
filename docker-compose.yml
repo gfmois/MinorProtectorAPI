@@ -1,23 +1,44 @@
 version: '3.2'
 services:
-  # age_classificator:
-  #   image: python:3.10-alpine3.20
-  #   volumes:
-  #     - ./backend/age_classificator:/app
-  #   command: > 
-  #     /bin/sh -c "apk add --no-cache make && 
-  #     pip install -r /app/requirements.txt && 
-  #     cd /app && make"
-  # FIXME: Not Working
-  # face_detector:
-  #   image: python:3.10-slim
-  #   volumes:
-  #     - ./backend/face_detector:/app
-  #   command: >
-  #     /bin/sh -c "apk add --no-cache build-base libffi-dev openblas-dev gfortran py3-pip &&
-  #     pip install --no-cache-dir numpy &&
-  #     pip install --no-cache-dir opencv-python-headless &&
-  #     cd /app && make"
+  age_classificator:
+    image: python:3.13.0b1-alpine
+
+    volumes:
+      - ./backend/age_classificator:/app
+    command: > 
+      /bin/sh -c "apk update && apk add build-base && apk add --no-cache make && 
+      pip install -r /app/requirements.txt && 
+      cd /app && make"
+    networks:
+      - backend-network
+
+  face_detector:
+    image: python:3.13.0b1-alpine
+
+    volumes:
+      - ./backend/face_detector:/app
+    command: >
+      /bin/sh -c "apk update && apk add build-base && apk add --no-cache build-base libffi-dev openblas-dev gfortran py3-pip &&
+      pip install --no-cache-dir numpy &&
+      pip install --no-cache-dir opencv-python-headless &&
+      cd /app && make"
+    networks:
+      - backend-network
+
+  gateway:
+    image: python:3.13.0b1-alpine
+
+    depends_on:
+      - face_detector
+      - age_classificator
+    volumes:
+      - ./backend/gateway:/app
+    ports:
+      - 80:5000
+    command: >
+      /bin/sh -c "apk update && apk add build-base && apk add --no-cache make && pip install -r /app/requirements.txt && cd /app && make"
+    networks:
+      - backend-network
 
   # frontend:
   #   build:
@@ -25,3 +46,6 @@ services:
   #     dockerfile: Dockerfile
   #   ports:
   #     - "8080:80"
+
+networks:
+  backend-network:
