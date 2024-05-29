@@ -23,6 +23,6 @@ def get_health_from_container(container_name: str):
         else:
             raise ValueError("Error while trying to recover face_detector server init")
         
-        return get_health_check(server_started_at=face_detector_datetime)
+        return face_detector_datetime
     except Exception as e:
         return jsonify(msg=str(e), status=500)

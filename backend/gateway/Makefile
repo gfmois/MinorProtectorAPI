@@ -1,2 +1,2 @@
 run:
-	@set FLASK_RUN_PORT=5001 && flask --app main run --debug
+	@export FLASK_RUN_PORT=5001 && flask --app main run --debug

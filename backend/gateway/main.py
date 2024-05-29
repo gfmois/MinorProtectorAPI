@@ -2,6 +2,7 @@ from datetime import datetime
 import json
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from flask_caching import Cache
 import socketio
 
@@ -10,6 +11,7 @@ from src.utils import get_health_check, get_health_from_container
 
 
 app = Flask(f"{__name__}_gateway")
+CORS(app)
 cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache'})
 face_detector_client = socketio.Client()
 age_detector_client = socketio.Client()
