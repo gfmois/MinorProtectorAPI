@@ -14,6 +14,7 @@
   <div class="form">
     <form>
       <div *ngIf="selectedFile" class="image-container">
+        <div *ngIf="!receivedImage" class="loader"></div>
         <img [src]="imageToShow">
       </div>
       <input type="file" class="file-input" (change)="onFileSelected($event)" #fileInput  id="fileInput"/>

@@ -27,7 +27,7 @@
         justify-content: center;
         align-items: center;
         width: 25vw;
-        height: 50vh;
+        // height: 50vh;
         padding: 20px;
     }
     .title {
@@ -45,6 +45,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
             img {
                 width: auto;
                 height: 100%;
@@ -94,7 +95,7 @@
             flex-direction: column;
             img {
                 width: 100%;
-                max-height: 300px;
+                // max-height: 300px;
             }
             margin-bottom: 30px;
 
@@ -177,3 +178,48 @@
         }
     }
 }
+
+.loader {
+    height: 5cm;
+    width: 5cm;
+    border-radius: 1rem;
+    /* border: 1px solid #002e5f; */
+    box-shadow: inset 0 0 0 #002e5f;
+    animation: load 4s ease infinite;
+    position: absolute;
+  }
+  
+  @keyframes load {
+    
+    0% {
+      box-shadow: inset -5cm -2.5cm 0 #002e5f;
+    }
+  
+    25% {
+      box-shadow: inset 5cm -2.5cm 0 #002e5f;
+    }
+  
+    25.01% {
+      box-shadow: inset 2.5cm -5cm 0 #002e5f;
+    }
+  
+    50% {
+      box-shadow: inset 2.5cm 5cm 0 #002e5f;
+    }
+  
+    50.01% {
+      box-shadow: inset 5cm 2.5cm 0 #002e5f;
+    }
+  
+    75% {
+      box-shadow: inset -5cm 2.5cm 0 #002e5f;
+    }
+  
+    75.01% {
+      box-shadow: inset -2.5cm 5cm 0 #002e5f;
+    }
+  
+    100% {
+      box-shadow: inset -2.5cm -5cm 0 #002e5f;
+    }
+  }
