@@ -3,7 +3,6 @@ datasets
 runs
 __pycache__
 venv
-.env
 *.png
 *.jpg
 *.jpeg
